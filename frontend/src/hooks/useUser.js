@@ -6,7 +6,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://mailji.onrender
 
 export function useUser() {
   const [user, setUser]           = useState(null)
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams]            = useSearchParams()
 
   useEffect(() => {
     const uid     = searchParams.get('user_id')
@@ -18,7 +18,8 @@ export function useUser() {
       const u = { user_id: uid, email, name: name || email, picture: picture || '' }
       setUser(u)
       localStorage.setItem(USER_KEY, JSON.stringify(u))
-      setSearchParams({})
+      // Clear query params from URL cleanly without a re-render loop
+      window.history.replaceState({}, '', window.location.pathname)
       return
     }
 
@@ -26,6 +27,7 @@ export function useUser() {
     if (stored) {
       try { setUser(JSON.parse(stored)) } catch {}
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const logout = async () => {
