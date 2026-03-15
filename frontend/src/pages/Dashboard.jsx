@@ -8,6 +8,8 @@ import {
 } from 'lucide-react'
 import { useUser }         from '../hooks/useUser.js'
 import StatsCard           from '../components/StatsCard.jsx'
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://mailji.onrender.com'
 import EmailRow            from '../components/EmailRow.jsx'
 import EmailDetail         from '../components/EmailDetail.jsx'
 import LoadingSkeleton     from '../components/LoadingSkeleton.jsx'
@@ -101,7 +103,7 @@ export default function Dashboard() {
     setLoading(true); setError(null); setSelectedEmail(null)
     try {
       const params = new URLSearchParams({ limit: pageSize, offset, use_lime: useLime })
-      const res    = await fetch(`/api/emails/${user.user_id}?${params}`)
+      const res    = await fetch(`${BACKEND_URL}/emails/${user.user_id}?${params}`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data   = await res.json()
       setEmails(data.emails || [])
@@ -157,7 +159,7 @@ export default function Dashboard() {
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <img
-            src="https://i.ibb.co/DfDmgfjN/Untitled-design-1-Photoroom.png"
+            src="/logo-white.png"
             alt="MailJi"
             style={{ height: 36, width: 'auto', objectFit: 'contain' }}
           />
