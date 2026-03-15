@@ -1,8 +1,7 @@
 <div align="center">
-  <img src="https://i.ibb.co/DfDmgfjN/Untitled-design-1-Photoroom.png" alt="MailJi Logo" width="220"/>
-
+  
   <h1>MailJi — AI-Powered Gmail Spam Classifier</h1>
-
+<a href="#"><img src="https://i.ibb.co/CTtwXyT/Untitled-design-1-Photoroom.png" alt="MailJi Logo" border="0" width="150px"></a>
   <p><em>Namaste, Dost. Your inbox is safe, Ji.</em></p>
 
   <p>
