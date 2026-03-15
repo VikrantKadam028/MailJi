@@ -144,9 +144,11 @@ export default function MailJiLanding() {
         .cmp-wrap{grid-template-columns:1fr}
         .stats-wrap{grid-template-columns:repeat(2,1fr)}
       }
+      @keyframes spinSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+      @keyframes spinReverse{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
       @media(max-width:768px){
         .hero-wrap{grid-template-columns:1fr}
-        .hero-img{display:none!important}
+        .hero-img{display:flex!important;justify-content:center;margin-top:16px}
         .feat-grid{grid-template-columns:1fr}
         .steps-wrap{grid-template-columns:1fr;gap:36px}
         .nav-links-wrap{display:none}
@@ -323,24 +325,63 @@ export default function MailJiLanding() {
             </motion.div>
           </motion.div>
 
-          {/* RIGHT — mascot, static (no float) */}
+          {/* RIGHT — mascot with animated circular bg */}
           <div className="hero-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            {/* Ornament SVG frame */}
-            <svg width="380" height="380" viewBox="0 0 380 380" fill="none" style={{ position: 'absolute', inset: 0, margin: 'auto', opacity: .1, pointerEvents: 'none' }}>
-              <rect x="2" y="2" width="376" height="376" stroke="#C9A84C" strokeWidth="1"/>
-              <rect x="18" y="18" width="344" height="344" stroke="#C9A84C" strokeWidth=".5"/>
-              {[0,90,180,270].map(r => (
-                <g key={r} transform={`rotate(${r} 190 190)`}>
-                  <path d="M190 2 L198 20 L190 16 L182 20 Z" fill="#C9A84C"/>
-                </g>
-              ))}
-              <circle cx="190" cy="190" r="112" stroke="#C9A84C" strokeWidth=".5"/>
-              <circle cx="190" cy="190" r="82" stroke="#C9A84C" strokeWidth=".5"/>
-              {[...Array(12)].map((_,i) => {
-                const a=(i/12)*Math.PI*2
-                return <circle key={i} cx={190+Math.cos(a)*112} cy={190+Math.sin(a)*112} r="2.5" fill="#C9A84C"/>
-              })}
-            </svg>
+
+            {/* Outermost slow-spin ring */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 380, height: 380,
+              animation: 'spinSlow 32s linear infinite',
+              pointerEvents: 'none',
+            }}>
+              <svg width="380" height="380" viewBox="0 0 380 380" fill="none">
+                <circle cx="190" cy="190" r="186" stroke="#C9A84C" strokeWidth="1" strokeDasharray="6 14" opacity=".35"/>
+                {[0,45,90,135,180,225,270,315].map(r => (
+                  <g key={r} transform={`rotate(${r} 190 190)`}>
+                    <path d="M190 4 L195 16 L190 13 L185 16 Z" fill="#C9A84C" opacity=".5"/>
+                  </g>
+                ))}
+              </svg>
+            </div>
+
+            {/* Second ring — counter-rotate */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 340, height: 340,
+              animation: 'spinReverse 22s linear infinite',
+              pointerEvents: 'none',
+            }}>
+              <svg width="340" height="340" viewBox="0 0 340 340" fill="none">
+                <circle cx="170" cy="170" r="166" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="3 20" opacity=".25"/>
+                {[...Array(12)].map((_,i) => {
+                  const a=(i/12)*Math.PI*2
+                  return <circle key={i} cx={170+Math.cos(a)*166} cy={170+Math.sin(a)*166} r="3" fill="#C9A84C" opacity=".45"/>
+                })}
+              </svg>
+            </div>
+
+            {/* Third ring — slow spin same direction */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 280, height: 280,
+              animation: 'spinSlow 48s linear infinite',
+              pointerEvents: 'none',
+            }}>
+              <svg width="280" height="280" viewBox="0 0 280 280" fill="none">
+                <rect x="2" y="2" width="276" height="276" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="2 12" opacity=".2" transform="rotate(45 140 140)"/>
+                <circle cx="140" cy="140" r="136" stroke="#C9A84C" strokeWidth=".5" opacity=".15"/>
+              </svg>
+            </div>
+
+            {/* Static glow blob behind mascot */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 240, height: 240,
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${T.gold}18 0%, transparent 70%)`,
+              pointerEvents: 'none',
+            }} />
 
             <motion.div
               initial={{ opacity: 0, scale: .9 }} animate={{ opacity: 1, scale: 1 }}
@@ -350,7 +391,7 @@ export default function MailJiLanding() {
               <img
                 src="https://png.pngtree.com/png-vector/20220821/ourmid/pngtree-indian-man-with-turban-rajasthani-men-welcome-namaste-greetings-png-image_6119228.png"
                 alt="MailJi mascot"
-                style={{ width: 'clamp(250px,25vw,340px)', display: 'block', filter: 'saturate(.85) contrast(1.06)' }}
+                style={{ width: 'clamp(200px,22vw,320px)', display: 'block', filter: 'saturate(.85) contrast(1.06)' }}
               />
               {/* Speech bubble */}
               <motion.div
