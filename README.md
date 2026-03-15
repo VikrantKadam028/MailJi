@@ -701,11 +701,60 @@ This project is for educational and portfolio purposes.
 
 ---
 
+---
+
+## 👥 Team & Contributors
+
+<div align="center">
+
+<table>
+<tr>
+<th>Member</th>
+<th>Role</th>
+<th>GitHub</th>
+<th>LinkedIn</th>
+</tr>
+<tr>
+<td><b>Vikrant Kadam</b></td>
+<td>Lead Developer · Lead Full Stack</td>
+<td><a href="https://github.com/VikrantKadam028"><img src="https://img.shields.io/badge/GitHub-VikrantKadam028-black?style=flat&logo=github" /></a></td>
+<td><a href="https://www.linkedin.com/in/vikrantkadam028"><img src="https://img.shields.io/badge/LinkedIn-vikrantkadam028-blue?style=flat&logo=linkedin" /></a></td>
+</tr>
+<tr>
+<td><b>Kartik Pagariya</b></td>
+<td>Lead Developer · AI/ML Engineer</td>
+<td><a href="https://github.com/kartikpagariya25"><img src="https://img.shields.io/badge/GitHub-kartikpagariya25-black?style=flat&logo=github" /></a></td>
+<td><a href="https://www.linkedin.com/in/kartikpagariya1911"><img src="https://img.shields.io/badge/LinkedIn-kartikpagariya1911-blue?style=flat&logo=linkedin" /></a></td>
+</tr>
+<tr>
+<td><b>Aditya Dengale</b></td>
+<td>Lead Backend Engineer · DevOps Engineer</td>
+<td><a href="https://github.com/DevXDividends"><img src="https://img.shields.io/badge/GitHub-DevXDividends-black?style=flat&logo=github" /></a></td>
+<td><a href="https://www.linkedin.com/in/adityadengale"><img src="https://img.shields.io/badge/LinkedIn-adityadengale-blue?style=flat&logo=linkedin" /></a></td>
+</tr>
+<tr>
+<td><b>Janhavi Pagare</b></td>
+<td>Frontend Developer · UX Designer</td>
+<td><a href="https://github.com/janhvi-2403"><img src="https://img.shields.io/badge/GitHub-janhvi--2403-black?style=flat&logo=github" /></a></td>
+<td><a href="https://www.linkedin.com/in/janhvi-pagare-1196b62b8"><img src="https://img.shields.io/badge/LinkedIn-janhvi--pagare-blue?style=flat&logo=linkedin" /></a></td>
+</tr>
+<tr>
+<td><b>Pranali Yelavikar</b></td>
+<td>Data Analyst · Core Researcher</td>
+<td><a href="https://github.com/pranaliyelavikar14"><img src="https://img.shields.io/badge/GitHub-pranaliyelavikar14-black?style=flat&logo=github" /></a></td>
+<td><a href="https://www.linkedin.com/in/pranali-yelavikar-2b3178383"><img src="https://img.shields.io/badge/LinkedIn-pranaliyelavikar-blue?style=flat&logo=linkedin" /></a></td>
+</tr>
+</table>
+
+</div>
+
+---
+
 <div align="center">
   <img src="https://i.ibb.co/DfDmgfjN/Untitled-design-1-Photoroom.png" alt="MailJi" width="80"/>
   <br/>
   <p>
-    <strong>MailJi</strong> · Built with 🙏 by Vikrant<br/>
+    <strong>MailJi</strong> · Built with 🙏 by the MailJi Team<br/>
     <em>Aapka Inbox, Humari Zimmedaari.</em>
   </p>
 </div>
