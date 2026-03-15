@@ -328,98 +328,88 @@ export default function MailJiLanding() {
           {/* RIGHT — mascot with animated circular bg */}
           <div className="hero-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
 
-            {/* Fixed-size anchor: all rings + mascot live inside this so centering always works */}
-            <div style={{ position: 'relative', width: 380, height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            {/* Outermost slow-spin ring */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 380, height: 380,
+              animation: 'spinSlow 32s linear infinite',
+              pointerEvents: 'none',
+            }}>
+              <svg width="380" height="380" viewBox="0 0 380 380" fill="none">
+                <circle cx="190" cy="190" r="186" stroke="#C9A84C" strokeWidth="1" strokeDasharray="6 14" opacity=".35"/>
+                {[0,45,90,135,180,225,270,315].map(r => (
+                  <g key={r} transform={`rotate(${r} 190 190)`}>
+                    <path d="M190 4 L195 16 L190 13 L185 16 Z" fill="#C9A84C" opacity=".5"/>
+                  </g>
+                ))}
+              </svg>
+            </div>
 
-              {/* Outermost slow-spin ring */}
-              <div style={{
-                position: 'absolute', top: '50%', left: '50%',
-                width: 380, height: 380,
-                transform: 'translate(-50%,-50%)',
-                animation: 'spinSlow 32s linear infinite',
-                pointerEvents: 'none',
-              }}>
-                <svg width="380" height="380" viewBox="0 0 380 380" fill="none">
-                  <circle cx="190" cy="190" r="186" stroke="#C9A84C" strokeWidth="1" strokeDasharray="6 14" opacity=".35"/>
-                  {[0,45,90,135,180,225,270,315].map(r => (
-                    <g key={r} transform={`rotate(${r} 190 190)`}>
-                      <path d="M190 4 L195 16 L190 13 L185 16 Z" fill="#C9A84C" opacity=".5"/>
-                    </g>
-                  ))}
-                </svg>
-              </div>
+            {/* Second ring — counter-rotate */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 340, height: 340,
+              animation: 'spinReverse 22s linear infinite',
+              pointerEvents: 'none',
+            }}>
+              <svg width="340" height="340" viewBox="0 0 340 340" fill="none">
+                <circle cx="170" cy="170" r="166" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="3 20" opacity=".25"/>
+                {[...Array(12)].map((_,i) => {
+                  const a=(i/12)*Math.PI*2
+                  return <circle key={i} cx={170+Math.cos(a)*166} cy={170+Math.sin(a)*166} r="3" fill="#C9A84C" opacity=".45"/>
+                })}
+              </svg>
+            </div>
 
-              {/* Second ring — counter-rotate */}
-              <div style={{
-                position: 'absolute', top: '50%', left: '50%',
-                width: 340, height: 340,
-                transform: 'translate(-50%,-50%)',
-                animation: 'spinReverse 22s linear infinite',
-                pointerEvents: 'none',
-              }}>
-                <svg width="340" height="340" viewBox="0 0 340 340" fill="none">
-                  <circle cx="170" cy="170" r="166" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="3 20" opacity=".25"/>
-                  {[...Array(12)].map((_,i) => {
-                    const a=(i/12)*Math.PI*2
-                    return <circle key={i} cx={170+Math.cos(a)*166} cy={170+Math.sin(a)*166} r="3" fill="#C9A84C" opacity=".45"/>
-                  })}
-                </svg>
-              </div>
+            {/* Third ring — slow spin same direction */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 280, height: 280,
+              animation: 'spinSlow 48s linear infinite',
+              pointerEvents: 'none',
+            }}>
+              <svg width="280" height="280" viewBox="0 0 280 280" fill="none">
+                <rect x="2" y="2" width="276" height="276" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="2 12" opacity=".2" transform="rotate(45 140 140)"/>
+                <circle cx="140" cy="140" r="136" stroke="#C9A84C" strokeWidth=".5" opacity=".15"/>
+              </svg>
+            </div>
 
-              {/* Third ring — slow spin same direction */}
-              <div style={{
-                position: 'absolute', top: '50%', left: '50%',
-                width: 280, height: 280,
-                transform: 'translate(-50%,-50%)',
-                animation: 'spinSlow 48s linear infinite',
-                pointerEvents: 'none',
-              }}>
-                <svg width="280" height="280" viewBox="0 0 280 280" fill="none">
-                  <rect x="2" y="2" width="276" height="276" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="2 12" opacity=".2" transform="rotate(45 140 140)"/>
-                  <circle cx="140" cy="140" r="136" stroke="#C9A84C" strokeWidth=".5" opacity=".15"/>
-                </svg>
-              </div>
+            {/* Static glow blob behind mascot */}
+            <div style={{
+              position: 'absolute', inset: 0, margin: 'auto',
+              width: 240, height: 240,
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${T.gold}18 0%, transparent 70%)`,
+              pointerEvents: 'none',
+            }} />
 
-              {/* Static glow blob */}
-              <div style={{
-                position: 'absolute', top: '50%', left: '50%',
-                width: 240, height: 240,
-                transform: 'translate(-50%,-50%)',
-                borderRadius: '50%',
-                background: `radial-gradient(circle, ${T.gold}18 0%, transparent 70%)`,
-                pointerEvents: 'none',
-              }} />
-
-              {/* Mascot image */}
+            <motion.div
+              initial={{ opacity: 0, scale: .9 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: .8, delay: .25 }}
+              style={{ position: 'relative', zIndex: 2 }}
+            >
+              <img
+                src="https://png.pngtree.com/png-vector/20220821/ourmid/pngtree-indian-man-with-turban-rajasthani-men-welcome-namaste-greetings-png-image_6119228.png"
+                alt="MailJi mascot"
+                style={{ width: 'clamp(200px,22vw,320px)', display: 'block', filter: 'saturate(.85) contrast(1.06)' }}
+              />
+              {/* Speech bubble */}
               <motion.div
-                initial={{ opacity: 0, scale: .9 }} animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: .8, delay: .25 }}
-                style={{ position: 'relative', zIndex: 2 }}
+                initial={{ opacity: 0, scale: .7 }} animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1, type: 'spring', stiffness: 180 }}
+                style={{
+                  position: 'absolute', top: 12, right: -18,
+                  background: T.black, color: T.gold,
+                  padding: '10px 16px',
+                  border: `1px solid ${T.gold}`,
+                  borderRadius: '12px 12px 2px 12px',
+                  fontFamily: T.mont, fontWeight: 700, fontSize: '.76rem',
+                  whiteSpace: 'nowrap', letterSpacing: '.03em', zIndex: 3,
+                }}
               >
-                <img
-                  src="https://png.pngtree.com/png-vector/20220821/ourmid/pngtree-indian-man-with-turban-rajasthani-men-welcome-namaste-greetings-png-image_6119228.png"
-                  alt="MailJi mascot"
-                  style={{ width: 'clamp(200px,22vw,300px)', display: 'block', filter: 'saturate(.85) contrast(1.06)' }}
-                />
-                {/* Speech bubble */}
-                <motion.div
-                  initial={{ opacity: 0, scale: .7 }} animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1, type: 'spring', stiffness: 180 }}
-                  style={{
-                    position: 'absolute', top: 12, right: -18,
-                    background: T.black, color: T.gold,
-                    padding: '10px 16px',
-                    border: `1px solid ${T.gold}`,
-                    borderRadius: '12px 12px 2px 12px',
-                    fontFamily: T.mont, fontWeight: 700, fontSize: '.76rem',
-                    whiteSpace: 'nowrap', letterSpacing: '.03em', zIndex: 3,
-                  }}
-                >
-                  Namaste! Inbox safe hai Ji!
-                </motion.div>
+                Namaste! Inbox safe hai Ji!
               </motion.div>
-
-            </div>{/* end fixed-size anchor */}
+            </motion.div>
           </div>
         </div>
       </section>
