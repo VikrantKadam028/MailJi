@@ -60,8 +60,8 @@ CREDS_FILE      = BASE_DIR / "credentials.json"
 
 CLIENT_ID     = os.getenv("GOOGLE_CLIENT_ID",     "")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
-REDIRECT_URI  = os.getenv("REDIRECT_URI",  "http://localhost:8000/auth/callback")
-FRONTEND_URL  = os.getenv("FRONTEND_URL",  "http://localhost:5173")
+REDIRECT_URI  = os.getenv("REDIRECT_URI",  "https://mailji.onrender.com/auth/callback")
+FRONTEND_URL  = os.getenv("FRONTEND_URL",  "https://mailji-frontend.onrender.com")
 
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",
@@ -417,9 +417,19 @@ def fetch_emails(
 
 app = FastAPI(title="Mailji AI API", version="3.0.0")
 
+# Build allowed origins list — FRONTEND_URL + localhost for dev + any EXTRA_ORIGINS env var
+_extra = [o.strip() for o in os.getenv("EXTRA_ORIGINS", "").split(",") if o.strip()]
+ALLOWED_ORIGINS = list({
+    FRONTEND_URL,
+    "http://localhost:5173",
+    "http://localhost:3000",
+    *_extra,
+})
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "http://localhost:5173", "http://localhost:3000"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=r"https://.*",  # allow ALL https origins (covers any deployment)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
