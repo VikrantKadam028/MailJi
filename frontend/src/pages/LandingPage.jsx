@@ -1,56 +1,57 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import { Mail, ArrowRight, Shield, Eye, Zap, Check, Star, Activity, Lock } from 'lucide-react'
+import AboutSection from '../components/AboutSection.jsx'
 
 /* ─── Demo emails ─── */
 const DEMO_EMAILS = [
-  { subject: 'Congratulations! You WON $10,000', sender: 'prize@lottery-win.com', spam: true,  prob: 0.98, words: ['WON','PRIZE','CLAIM'] },
-  { subject: 'Design review notes from Alex',    sender: 'alex@studio.io',        spam: false, prob: 0.02, words: [] },
-  { subject: 'URGENT: Account needs verify!!',   sender: 'security@phish.ru',     spam: true,  prob: 0.96, words: ['URGENT','VERIFY'] },
-  { subject: 'Sprint planning — Tuesday 10am',   sender: 'pm@company.co',         spam: false, prob: 0.04, words: [] },
-  { subject: 'FREE iPhone — Limited offer!!!',   sender: 'offers@scam-deals.net', spam: true,  prob: 0.97, words: ['FREE','LIMITED'] },
+  { subject: 'Congratulations! You WON $10,000', sender: 'prize@lottery-win.com', spam: true, prob: 0.98, words: ['WON', 'PRIZE', 'CLAIM'] },
+  { subject: 'Design review notes from Alex', sender: 'alex@studio.io', spam: false, prob: 0.02, words: [] },
+  { subject: 'URGENT: Account needs verify!!', sender: 'security@phish.ru', spam: true, prob: 0.96, words: ['URGENT', 'VERIFY'] },
+  { subject: 'Sprint planning — Tuesday 10am', sender: 'pm@company.co', spam: false, prob: 0.04, words: [] },
+  { subject: 'FREE iPhone — Limited offer!!!', sender: 'offers@scam-deals.net', spam: true, prob: 0.97, words: ['FREE', 'LIMITED'] },
 ]
 
 const FEATURES = [
-  { icon: Shield, no: '01', title: 'Instant Detection, Ji',       desc: 'Every email is analysed the moment it arrives. MailJi flags suspicious messages with a precise confidence score — koi cheez nahi chhutti.' },
-  { icon: Eye,    no: '02', title: 'See Why — Bilkul Clear',       desc: 'No black boxes. MailJi highlights the exact words and patterns that triggered the verdict. Full transparency, zero guesswork.' },
-  { icon: Zap,    no: '03', title: 'Scan Any Range',               desc: 'Choose exactly how many emails to scan — 10, 25, or 50 at a time. Page through at your own pace. Aapki marzi.' },
-  { icon: Mail,   no: '04', title: 'Gmail Native, Ekdum Easy',     desc: 'One-click Google sign-in. Read-only access means MailJi never moves, deletes, or modifies a single email. Promise hai.' },
-  { icon: Star,   no: '05', title: '99.3% Accuracy, Sach Mein',   desc: 'Trained on tens of thousands of real-world emails. Outperforms most enterprise-grade spam filters available today.' },
-  { icon: Lock,   no: '06', title: 'Zero Data Stored, Kabhi Nahi', desc: 'Your emails are never saved to any server. Everything is processed within your session and discarded when you leave.' },
+  { icon: Shield, no: '01', title: 'Instant Detection, Ji', desc: 'Every email is analysed the moment it arrives. MailJi flags suspicious messages with a precise confidence score — koi cheez nahi chhutti.' },
+  { icon: Eye, no: '02', title: 'See Why — Bilkul Clear', desc: 'No black boxes. MailJi highlights the exact words and patterns that triggered the verdict. Full transparency, zero guesswork.' },
+  { icon: Zap, no: '03', title: 'Scan Any Range', desc: 'Choose exactly how many emails to scan — 10, 25, or 50 at a time. Page through at your own pace. Aapki marzi.' },
+  { icon: Mail, no: '04', title: 'Gmail Native, Ekdum Easy', desc: 'One-click Google sign-in. Read-only access means MailJi never moves, deletes, or modifies a single email. Promise hai.' },
+  { icon: Star, no: '05', title: '99.3% Accuracy, Sach Mein', desc: 'Trained on tens of thousands of real-world emails. Outperforms most enterprise-grade spam filters available today.' },
+  { icon: Lock, no: '06', title: 'Zero Data Stored, Kabhi Nahi', desc: 'Your emails are never saved to any server. Everything is processed within your session and discarded when you leave.' },
 ]
 
 const STEPS = [
-  { n: '01', title: 'Namaste Gmail Ko',      desc: 'One-click Google sign-in. Read-only access — we never modify or delete your emails. Scout\'s honour, Ji.' },
+  { n: '01', title: 'Namaste Gmail Ko', desc: 'One-click Google sign-in. Read-only access — we never modify or delete your emails. Scout\'s honour, Ji.' },
   { n: '02', title: 'Pick Your Range, Bhai', desc: 'Choose how many emails to scan. Browse your inbox at your own pace. Aapka inbox, aapka control.' },
-  { n: '03', title: 'Read the Report',       desc: 'Confidence scores and clear explanations for every flagged message, delivered instantly. Bas itna hi!' },
+  { n: '03', title: 'Read the Report', desc: 'Confidence scores and clear explanations for every flagged message, delivered instantly. Bas itna hi!' },
 ]
 
 const STATS = [
-  { value: '99.3%',  label: 'Detection Accuracy' },
-  { value: '< 1s',   label: 'Analysis Speed' },
-  { value: '0',      label: 'Emails Stored' },
+  { value: '99.3%', label: 'Detection Accuracy' },
+  { value: '< 1s', label: 'Analysis Speed' },
+  { value: '0', label: 'Emails Stored' },
   { value: '1-Click', label: 'Gmail Setup' },
 ]
 
 const COMPARE = [
-  ['Spam Detection',      true,  true ],
-  ['Explains Why',        true,  false],
-  ['Word-level Analysis', true,  false],
-  ['99.3% Accuracy',      true,  false],
-  ['Zero Data Stored',    true,  false],
-  ['Read-only Access',    true,  true ],
-  ['Free to Use',         true,  false],
+  ['Spam Detection', true, true],
+  ['Explains Why', true, false],
+  ['Word-level Analysis', true, false],
+  ['99.3% Accuracy', true, false],
+  ['Zero Data Stored', true, false],
+  ['Read-only Access', true, true],
+  ['Free to Use', true, false],
 ]
 
 const IMPACT_WORDS = [
-  { label: 'WON',         val: 0.88, spam: true  },
-  { label: 'CLAIM',       val: 0.74, spam: true  },
-  { label: 'PRIZE',       val: 0.68, spam: true  },
-  { label: 'URGENT',      val: 0.54, spam: true  },
+  { label: 'WON', val: 0.88, spam: true },
+  { label: 'CLAIM', val: 0.74, spam: true },
+  { label: 'PRIZE', val: 0.68, spam: true },
+  { label: 'URGENT', val: 0.54, spam: true },
   { label: 'alex@studio', val: 0.61, spam: false },
-  { label: 'pm@company',  val: 0.42, spam: false },
-  { label: 'review',      val: 0.22, spam: false },
+  { label: 'pm@company', val: 0.42, spam: false },
+  { label: 'review', val: 0.22, spam: false },
 ]
 
 /* ─── Helpers ─── */
@@ -87,10 +88,10 @@ function GoldRule({ w = '100%', style = {} }) {
    MAIN
 ══════════════════════════════════════════════ */
 export default function MailJiLanding() {
-  const [loading, setLoading]     = useState(false)
-  const [hovFeat, setHovFeat]     = useState(null)
-  const { scrollY }               = useScroll()
-  const hParallax                 = useTransform(scrollY, [0, 500], [0, -36])
+  const [loading, setLoading] = useState(false)
+  const [hovFeat, setHovFeat] = useState(null)
+  const { scrollY } = useScroll()
+  const hParallax = useTransform(scrollY, [0, 500], [0, -36])
 
   useEffect(() => {
     const lnk = document.createElement('link')
@@ -181,16 +182,16 @@ export default function MailJiLanding() {
 
   /* ── tokens ── */
   const T = {
-    black:  '#0A0A0A', bMid: '#111111', bSoft: '#1A1A1A', bCard: '#141414',
-    bdr:    '#252525', bdrG: '#B8860B33',
-    gold:   '#C9A84C', goldB: '#E2B84A', goldD: '#8A6A20',
-    cream:  '#F5EDD6', crmD: '#C8BA9A',
-    red:    '#C0392B', redL: '#E07070',
-    grn:    '#1A7A4A', grnL: '#4CAF7D',
-    mont:   "'Montserrat',sans-serif",
-    corm:   "'Cormorant Garamond',Georgia,serif",
-    scr:    "'Pinyon Script',cursive",
-    px:     'clamp(24px,6vw,96px)',
+    black: '#0A0A0A', bMid: '#111111', bSoft: '#1A1A1A', bCard: '#141414',
+    bdr: '#252525', bdrG: '#B8860B33',
+    gold: '#C9A84C', goldB: '#E2B84A', goldD: '#8A6A20',
+    cream: '#F5EDD6', crmD: '#C8BA9A',
+    red: '#C0392B', redL: '#E07070',
+    grn: '#1A7A4A', grnL: '#4CAF7D',
+    mont: "'Montserrat',sans-serif",
+    corm: "'Cormorant Garamond',Georgia,serif",
+    scr: "'Pinyon Script',cursive",
+    px: 'clamp(24px,6vw,96px)',
   }
 
   const secPad = `clamp(80px,10vw,120px) ${T.px}`
@@ -229,7 +230,7 @@ export default function MailJiLanding() {
       >
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' ,marginLeft : 12}}>
+          <div style={{ width: 36, height: 36, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 12 }}>
             {/* <Mail size={15} color={T.black} strokeWidth={2.5} /> */}
             <img src="/logo-white.png" width="78px"></img>
           </div>
@@ -241,7 +242,7 @@ export default function MailJiLanding() {
 
         {/* Nav links */}
         <div className="nav-links-wrap">
-          {[['#features','Features'],['#how-it-works','How It Works'],['#why-mailji','Why MailJi']].map(([href, lbl]) => (
+          {[['#about', 'About'], ['#why-mailji', 'Why MailJi'], ['#features', 'Features'], ['#how-it-works', 'How It Works']].map(([href, lbl]) => (
             <a key={lbl} href={href}
               style={{ fontSize: '.76rem', fontWeight: 600, color: `${T.crmD}88`, textDecoration: 'none', letterSpacing: '.05em', transition: 'color .2s' }}
               onMouseEnter={e => e.target.style.color = T.gold}
@@ -336,10 +337,10 @@ export default function MailJiLanding() {
               pointerEvents: 'none',
             }}>
               <svg width="380" height="380" viewBox="0 0 380 380" fill="none">
-                <circle cx="190" cy="190" r="186" stroke="#C9A84C" strokeWidth="1" strokeDasharray="6 14" opacity=".35"/>
-                {[0,45,90,135,180,225,270,315].map(r => (
+                <circle cx="190" cy="190" r="186" stroke="#C9A84C" strokeWidth="1" strokeDasharray="6 14" opacity=".35" />
+                {[0, 45, 90, 135, 180, 225, 270, 315].map(r => (
                   <g key={r} transform={`rotate(${r} 190 190)`}>
-                    <path d="M190 4 L195 16 L190 13 L185 16 Z" fill="#C9A84C" opacity=".5"/>
+                    <path d="M190 4 L195 16 L190 13 L185 16 Z" fill="#C9A84C" opacity=".5" />
                   </g>
                 ))}
               </svg>
@@ -353,10 +354,10 @@ export default function MailJiLanding() {
               pointerEvents: 'none',
             }}>
               <svg width="340" height="340" viewBox="0 0 340 340" fill="none">
-                <circle cx="170" cy="170" r="166" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="3 20" opacity=".25"/>
-                {[...Array(12)].map((_,i) => {
-                  const a=(i/12)*Math.PI*2
-                  return <circle key={i} cx={170+Math.cos(a)*166} cy={170+Math.sin(a)*166} r="3" fill="#C9A84C" opacity=".45"/>
+                <circle cx="170" cy="170" r="166" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="3 20" opacity=".25" />
+                {[...Array(12)].map((_, i) => {
+                  const a = (i / 12) * Math.PI * 2
+                  return <circle key={i} cx={170 + Math.cos(a) * 166} cy={170 + Math.sin(a) * 166} r="3" fill="#C9A84C" opacity=".45" />
                 })}
               </svg>
             </div>
@@ -369,8 +370,8 @@ export default function MailJiLanding() {
               pointerEvents: 'none',
             }}>
               <svg width="280" height="280" viewBox="0 0 280 280" fill="none">
-                <rect x="2" y="2" width="276" height="276" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="2 12" opacity=".2" transform="rotate(45 140 140)"/>
-                <circle cx="140" cy="140" r="136" stroke="#C9A84C" strokeWidth=".5" opacity=".15"/>
+                <rect x="2" y="2" width="276" height="276" stroke="#C9A84C" strokeWidth=".6" strokeDasharray="2 12" opacity=".2" transform="rotate(45 140 140)" />
+                <circle cx="140" cy="140" r="136" stroke="#C9A84C" strokeWidth=".5" opacity=".15" />
               </svg>
             </div>
 
@@ -417,9 +418,9 @@ export default function MailJiLanding() {
       {/* ━━━━━━━━━━━━━━━━━━ MARQUEE ━━━━━━━━━━━━━━━━━━ */}
       <div style={{ borderTop: `1px solid ${T.bdrG}`, borderBottom: `1px solid ${T.bdrG}`, overflow: 'hidden', background: T.bMid }}>
         <div style={{ display: 'flex', animation: 'mq 32s linear infinite', width: 'max-content', whiteSpace: 'nowrap', padding: '12px 0', alignItems: 'center' }}>
-          {[...Array(2)].map((_,k) =>
-            ['🙏 Namaste, Inbox!','◆','Instant Spam Detection','◆','99.3% Accuracy','◆','Gmail Native, Ji','◆','Zero Data Stored','◆','Free Forever','◆','Explainable AI','◆'].map((t,i) => (
-              <span key={`${k}-${i}`} style={{ padding: '0 22px', fontFamily: T.mont, fontWeight: t==='◆'?400:700, fontSize: '.7rem', letterSpacing: '.12em', textTransform: 'uppercase', color: t==='◆'?`${T.gold}33`:T.gold }}>{t}</span>
+          {[...Array(2)].map((_, k) =>
+            ['🙏 Namaste, Inbox!', '◆', 'Instant Spam Detection', '◆', '99.3% Accuracy', '◆', 'Gmail Native, Ji', '◆', 'Zero Data Stored', '◆', 'Free Forever', '◆', 'Explainable AI', '◆'].map((t, i) => (
+              <span key={`${k}-${i}`} style={{ padding: '0 22px', fontFamily: T.mont, fontWeight: t === '◆' ? 400 : 700, fontSize: '.7rem', letterSpacing: '.12em', textTransform: 'uppercase', color: t === '◆' ? `${T.gold}33` : T.gold }}>{t}</span>
             ))
           )}
         </div>
@@ -441,164 +442,8 @@ export default function MailJiLanding() {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━ FEATURES ━━━━━━━━━━━━━━━━━━ */}
-      <section id="features" style={{ padding: secPad, background: T.black }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-
-          <Reveal style={{ marginBottom: 52 }}>
-            <Tag>✦ Sabse Khaas Features</Tag>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, flexWrap: 'wrap', marginBottom: 14 }}>
-              <h2 style={{ fontFamily: T.mont, fontWeight: 900, fontSize: 'clamp(1.9rem,4vw,3.2rem)', color: '#fff', lineHeight: 1, letterSpacing: '-0.025em' }}>Built for Real</h2>
-              <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(2.2rem,4.8vw,3.8rem)', color: T.gold, lineHeight: 1 }}>Clarity, Ji.</span>
-            </div>
-            <p style={{ fontSize: '.94rem', color: T.crmD, lineHeight: 1.85, maxWidth: 520 }}>
-              Not just a spam filter — MailJi explains <em style={{ color: T.goldB }}>kyun</em> using real feature analysis from your actual emails.
-            </p>
-          </Reveal>
-
-          <div className="feat-grid">
-            {FEATURES.map((f, i) => (
-              <Reveal key={f.title} delay={i * .55}>
-                <motion.div
-                  onHoverStart={() => setHovFeat(i)} onHoverEnd={() => setHovFeat(null)}
-                  style={{
-                    padding: 'clamp(28px,4vw,44px) clamp(22px,3vw,36px)',
-                    borderRight: `1px solid ${T.bdrG}`, borderBottom: `1px solid ${T.bdrG}`,
-                    background: hovFeat === i ? T.bSoft : 'transparent',
-                    transition: 'background .25s', cursor: 'default',
-                    position: 'relative', overflow: 'hidden',
-                  }}
-                >
-                  {/* Bg number */}
-                  <div style={{ position: 'absolute', top: 14, right: 18, fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: '3.2rem', color: `${T.gold}0E`, lineHeight: 1, userSelect: 'none' }}>{f.no}</div>
-
-                  {/* Icon box */}
-                  <div style={{
-                    width: 46, height: 46, borderRadius: 3,
-                    border: `1px solid ${hovFeat===i ? T.gold : T.bdrG}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    marginBottom: 22, background: hovFeat===i ? `${T.gold}10` : 'transparent',
-                    transition: 'all .25s',
-                  }}>
-                    <f.icon size={19} color={hovFeat===i ? T.gold : T.goldD} strokeWidth={1.8} />
-                  </div>
-
-                  <h3 style={{ fontFamily: T.mont, fontWeight: 800, fontSize: '.94rem', color: '#fff', marginBottom: 10, lineHeight: 1.35, letterSpacing: '-.01em' }}>{f.title}</h3>
-                  <p style={{ fontSize: '.82rem', color: T.crmD, lineHeight: 1.85 }}>{f.desc}</p>
-
-                  {/* Bottom hover line */}
-                  <motion.div animate={{ width: hovFeat===i ? '100%' : '0%' }} transition={{ duration: .28 }}
-                    style={{ position: 'absolute', bottom: 0, left: 0, height: 2, background: T.gold }} />
-                </motion.div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ━━━━━━━━━━━━━━━━━━ LIVE DEMO ━━━━━━━━━━━━━━━━━━ */}
-      <section style={{ padding: secPad, background: T.bMid, borderTop: `1px solid ${T.bdrG}`, borderBottom: `1px solid ${T.bdrG}` }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
-
-          <Reveal style={{ marginBottom: 52 }}>
-            <Tag>✦ Live Preview</Tag>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, flexWrap: 'wrap', marginBottom: 14 }}>
-              <h2 style={{ fontFamily: T.mont, fontWeight: 900, fontSize: 'clamp(1.9rem,4vw,3.2rem)', color: '#fff', lineHeight: 1, letterSpacing: '-0.025em' }}>Dekho</h2>
-              <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(2.2rem,4.8vw,3.8rem)', color: T.gold, lineHeight: 1 }}>Kaise Kaam Karta Hai</span>
-            </div>
-            <p style={{ fontSize: '.92rem', color: T.crmD, lineHeight: 1.85 }}>
-              Har email ko verdict milta hai — aur saath mein reason bhi, bilkul clear.
-            </p>
-          </Reveal>
-
-          <Reveal>
-            <div style={{ border: `1px solid ${T.bdrG}`, borderRadius: 4, overflow: 'hidden' }}>
-
-              {/* Chrome */}
-              <div style={{ padding: '13px 20px', borderBottom: `1px solid ${T.bdrG}`, background: T.bCard, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-                <div style={{ display: 'flex', gap: 7 }}>
-                  {['#C0392B','#C9A84C','#27AE60'].map(c => <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />)}
-                </div>
-                <span style={{ fontSize: '.63rem', color: `${T.crmD}44`, letterSpacing: '.12em', textTransform: 'uppercase', fontWeight: 700 }}>MailJi · Inbox Scanner</span>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  {[['3 Spam', T.red, `${T.red}1A`],['2 Safe', T.grnL, `${T.grn}1A`]].map(([lbl, clr, bg]) => (
-                    <span key={lbl} style={{ padding: '3px 11px', borderRadius: 2, fontSize: '.6rem', fontWeight: 800, color: clr, background: bg, border: `1px solid ${clr}33`, letterSpacing: '.07em', textTransform: 'uppercase' }}>{lbl}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Rows */}
-              {DEMO_EMAILS.map((e, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, x: -14 }} whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }} transition={{ delay: i * .08, duration: .4 }}
-                  whileHover={{ background: `${T.bdr}44` }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '15px 20px', borderBottom: i < 4 ? `1px solid ${T.bdrG}` : 'none', borderLeft: `3px solid ${e.spam ? T.red : T.grnL}`, transition: 'background .15s', cursor: 'default' }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: '.84rem', color: e.spam ? T.redL : '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 4, letterSpacing: '-.01em' }}>{e.subject}</div>
-                    <div style={{ fontSize: '.67rem', color: `${T.crmD}44` }}>{e.sender}</div>
-                    {e.words.length > 0 && (
-                      <div style={{ display: 'flex', gap: 5, marginTop: 6, flexWrap: 'wrap' }}>
-                        {e.words.map(w => <span key={w} style={{ padding: '2px 7px', borderRadius: 2, background: `${T.red}1A`, color: T.redL, fontSize: '.56rem', fontWeight: 800, letterSpacing: '.08em', border: `1px solid ${T.red}33` }}>{w}</span>)}
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ width: 96, flexShrink: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                      <span style={{ fontSize: '.58rem', color: `${T.crmD}44`, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.07em' }}>{e.spam ? 'Spam' : 'Safe'}</span>
-                      <span style={{ fontSize: '.62rem', fontWeight: 800, color: e.spam ? T.redL : T.grnL }}>{Math.round(e.prob * 100)}%</span>
-                    </div>
-                    <div style={{ height: 4, background: `${T.cream}0A`, borderRadius: 1, overflow: 'hidden' }}>
-                      <motion.div
-                        initial={{ width: 0 }} whileInView={{ width: `${e.prob*100}%` }}
-                        viewport={{ once: true }} transition={{ delay: .3 + i * .08, duration: .9 }}
-                        style={{ height: '100%', borderRadius: 1, background: e.spam ? `linear-gradient(90deg,${T.red},${T.redL})` : `linear-gradient(90deg,${T.grn},${T.grnL})` }}
-                      />
-                    </div>
-                  </div>
-                  <span style={{ padding: '4px 12px', borderRadius: 2, flexShrink: 0, background: e.spam ? `${T.red}18` : `${T.grn}22`, color: e.spam ? T.redL : T.grnL, fontSize: '.6rem', fontWeight: 800, letterSpacing: '.07em', textTransform: 'uppercase', border: `1px solid ${e.spam ? T.red : T.grnL}33` }}>
-                    {e.spam ? `${Math.round(e.prob*100)}% Spam` : 'Safe ✓'}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ━━━━━━━━━━━━━━━━━━ HOW IT WORKS ━━━━━━━━━━━━━━━━━━ */}
-      <section id="how-it-works" style={{ padding: secPad, background: T.black }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-
-          <Reveal style={{ textAlign: 'center', marginBottom: 72 }}>
-            <Tag>✦ Seedha Simple Process</Tag>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
-              <h2 style={{ fontFamily: T.mont, fontWeight: 900, fontSize: 'clamp(1.9rem,4vw,3.2rem)', color: '#fff', lineHeight: 1, letterSpacing: '-0.025em' }}>Ready in</h2>
-              <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(2.2rem,4.8vw,3.8rem)', color: T.gold, lineHeight: 1 }}>ek minute, Ji.</span>
-            </div>
-            <p style={{ fontSize: '.93rem', color: T.crmD, lineHeight: 1.85, maxWidth: 420, margin: '0 auto' }}>
-              No setup, no confusion, no nautanki. Just connect and go.
-            </p>
-          </Reveal>
-
-          <div className="steps-wrap" style={{ position: 'relative' }}>
-            {STEPS.map((s, i) => (
-              <Reveal key={s.n} delay={i * 1.2}>
-                <div style={{ textAlign: 'center', position: 'relative', padding: '0 16px' }}>
-                  {/* Step number circle */}
-                  <div style={{ width: 72, height: 72, borderRadius: '50%', border: `1px solid ${T.gold}`, background: T.bCard, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                    <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 700, fontSize: '1.75rem', color: T.gold, lineHeight: 1 }}>{s.n}</span>
-                  </div>
-                  <GoldRule w={32} style={{ margin: '0 auto 22px' }} />
-                  <h3 style={{ fontFamily: T.mont, fontWeight: 800, fontSize: '1rem', color: '#fff', marginBottom: 12, letterSpacing: '-.01em' }}>{s.title}</h3>
-                  <p style={{ fontSize: '.86rem', color: T.crmD, lineHeight: 1.88, maxWidth: 250, margin: '0 auto' }}>{s.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ━━━━━━━━━━━━━━━━━━ ABOUT ━━━━━━━━━━━━━━━━━━ */}
+      <AboutSection />
 
       {/* ━━━━━━━━━━━━━━━━━━ WHY MAILJI ━━━━━━━━━━━━━━━━━━ */}
       <section id="why-mailji" style={{ padding: secPad, background: T.bMid, borderTop: `1px solid ${T.bdrG}`, borderBottom: `1px solid ${T.bdrG}` }}>
@@ -635,10 +480,10 @@ export default function MailJiLanding() {
                   >
                     <div style={{ padding: '13px 20px', fontSize: '.82rem', color: T.crmD, fontWeight: 500 }}>{lbl}</div>
                     <div style={{ padding: '13px 20px', borderLeft: `1px solid ${T.bdrG}`, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      {mj ? <Check size={15} color={T.gold} strokeWidth={2.5}/> : <span style={{ color: `${T.crmD}22`, fontSize: '.9rem' }}>—</span>}
+                      {mj ? <Check size={15} color={T.gold} strokeWidth={2.5} /> : <span style={{ color: `${T.crmD}22`, fontSize: '.9rem' }}>—</span>}
                     </div>
                     <div style={{ padding: '13px 20px', borderLeft: `1px solid ${T.bdrG}`, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      {oth ? <Check size={15} color={`${T.crmD}44`} strokeWidth={1.8}/> : <span style={{ color: `${T.crmD}22`, fontSize: '.9rem' }}>—</span>}
+                      {oth ? <Check size={15} color={`${T.crmD}44`} strokeWidth={1.8} /> : <span style={{ color: `${T.crmD}22`, fontSize: '.9rem' }}>—</span>}
                     </div>
                   </motion.div>
                 ))}
@@ -697,6 +542,165 @@ export default function MailJiLanding() {
         </div>
       </section>
 
+      {/* ━━━━━━━━━━━━━━━━━━ FEATURES ━━━━━━━━━━━━━━━━━━ */}
+      <section id="features" style={{ padding: secPad, background: T.black }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+
+          <Reveal style={{ marginBottom: 52 }}>
+            <Tag>✦ Sabse Khaas Features</Tag>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, flexWrap: 'wrap', marginBottom: 14 }}>
+              <h2 style={{ fontFamily: T.mont, fontWeight: 900, fontSize: 'clamp(1.9rem,4vw,3.2rem)', color: '#fff', lineHeight: 1, letterSpacing: '-0.025em' }}>Built for Real</h2>
+              <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(2.2rem,4.8vw,3.8rem)', color: T.gold, lineHeight: 1 }}>Clarity, Ji.</span>
+            </div>
+            <p style={{ fontSize: '.94rem', color: T.crmD, lineHeight: 1.85, maxWidth: 520 }}>
+              Not just a spam filter — MailJi explains <em style={{ color: T.goldB }}>kyun</em> using real feature analysis from your actual emails.
+            </p>
+          </Reveal>
+
+          <div className="feat-grid">
+            {FEATURES.map((f, i) => (
+              <Reveal key={f.title} delay={i * .55}>
+                <motion.div
+                  onHoverStart={() => setHovFeat(i)} onHoverEnd={() => setHovFeat(null)}
+                  style={{
+                    padding: 'clamp(28px,4vw,44px) clamp(22px,3vw,36px)',
+                    borderRight: `1px solid ${T.bdrG}`, borderBottom: `1px solid ${T.bdrG}`,
+                    background: hovFeat === i ? T.bSoft : 'transparent',
+                    transition: 'background .25s', cursor: 'default',
+                    position: 'relative', overflow: 'hidden',
+                  }}
+                >
+                  {/* Bg number */}
+                  <div style={{ position: 'absolute', top: 14, right: 18, fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: '3.2rem', color: `${T.gold}0E`, lineHeight: 1, userSelect: 'none' }}>{f.no}</div>
+
+                  {/* Icon box */}
+                  <div style={{
+                    width: 46, height: 46, borderRadius: 3,
+                    border: `1px solid ${hovFeat === i ? T.gold : T.bdrG}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: 22, background: hovFeat === i ? `${T.gold}10` : 'transparent',
+                    transition: 'all .25s',
+                  }}>
+                    <f.icon size={19} color={hovFeat === i ? T.gold : T.goldD} strokeWidth={1.8} />
+                  </div>
+
+                  <h3 style={{ fontFamily: T.mont, fontWeight: 800, fontSize: '.94rem', color: '#fff', marginBottom: 10, lineHeight: 1.35, letterSpacing: '-.01em' }}>{f.title}</h3>
+                  <p style={{ fontSize: '.82rem', color: T.crmD, lineHeight: 1.85 }}>{f.desc}</p>
+
+                  {/* Bottom hover line */}
+                  <motion.div animate={{ width: hovFeat === i ? '100%' : '0%' }} transition={{ duration: .28 }}
+                    style={{ position: 'absolute', bottom: 0, left: 0, height: 2, background: T.gold }} />
+                </motion.div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ━━━━━━━━━━━━━━━━━━ LIVE DEMO ━━━━━━━━━━━━━━━━━━ */}
+      <section style={{ padding: secPad, background: T.bMid, borderTop: `1px solid ${T.bdrG}`, borderBottom: `1px solid ${T.bdrG}` }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+
+          <Reveal style={{ marginBottom: 52 }}>
+            <Tag>✦ Live Preview</Tag>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, flexWrap: 'wrap', marginBottom: 14 }}>
+              <h2 style={{ fontFamily: T.mont, fontWeight: 900, fontSize: 'clamp(1.9rem,4vw,3.2rem)', color: '#fff', lineHeight: 1, letterSpacing: '-0.025em' }}>Dekho</h2>
+              <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(2.2rem,4.8vw,3.8rem)', color: T.gold, lineHeight: 1 }}>Kaise Kaam Karta Hai</span>
+            </div>
+            <p style={{ fontSize: '.92rem', color: T.crmD, lineHeight: 1.85 }}>
+              Har email ko verdict milta hai — aur saath mein reason bhi, bilkul clear.
+            </p>
+          </Reveal>
+
+          <Reveal>
+            <div style={{ border: `1px solid ${T.bdrG}`, borderRadius: 4, overflow: 'hidden' }}>
+
+              {/* Chrome */}
+              <div style={{ padding: '13px 20px', borderBottom: `1px solid ${T.bdrG}`, background: T.bCard, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 7 }}>
+                  {['#C0392B', '#C9A84C', '#27AE60'].map(c => <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />)}
+                </div>
+                <span style={{ fontSize: '.63rem', color: `${T.crmD}44`, letterSpacing: '.12em', textTransform: 'uppercase', fontWeight: 700 }}>MailJi · Inbox Scanner</span>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {[['3 Spam', T.red, `${T.red}1A`], ['2 Safe', T.grnL, `${T.grn}1A`]].map(([lbl, clr, bg]) => (
+                    <span key={lbl} style={{ padding: '3px 11px', borderRadius: 2, fontSize: '.6rem', fontWeight: 800, color: clr, background: bg, border: `1px solid ${clr}33`, letterSpacing: '.07em', textTransform: 'uppercase' }}>{lbl}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Rows */}
+              {DEMO_EMAILS.map((e, i) => (
+                <motion.div key={i}
+                  initial={{ opacity: 0, x: -14 }} whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }} transition={{ delay: i * .08, duration: .4 }}
+                  whileHover={{ background: `${T.bdr}44` }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '15px 20px', borderBottom: i < 4 ? `1px solid ${T.bdrG}` : 'none', borderLeft: `3px solid ${e.spam ? T.red : T.grnL}`, transition: 'background .15s', cursor: 'default' }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: '.84rem', color: e.spam ? T.redL : '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 4, letterSpacing: '-.01em' }}>{e.subject}</div>
+                    <div style={{ fontSize: '.67rem', color: `${T.crmD}44` }}>{e.sender}</div>
+                    {e.words.length > 0 && (
+                      <div style={{ display: 'flex', gap: 5, marginTop: 6, flexWrap: 'wrap' }}>
+                        {e.words.map(w => <span key={w} style={{ padding: '2px 7px', borderRadius: 2, background: `${T.red}1A`, color: T.redL, fontSize: '.56rem', fontWeight: 800, letterSpacing: '.08em', border: `1px solid ${T.red}33` }}>{w}</span>)}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ width: 96, flexShrink: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                      <span style={{ fontSize: '.58rem', color: `${T.crmD}44`, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.07em' }}>{e.spam ? 'Spam' : 'Safe'}</span>
+                      <span style={{ fontSize: '.62rem', fontWeight: 800, color: e.spam ? T.redL : T.grnL }}>{Math.round(e.prob * 100)}%</span>
+                    </div>
+                    <div style={{ height: 4, background: `${T.cream}0A`, borderRadius: 1, overflow: 'hidden' }}>
+                      <motion.div
+                        initial={{ width: 0 }} whileInView={{ width: `${e.prob * 100}%` }}
+                        viewport={{ once: true }} transition={{ delay: .3 + i * .08, duration: .9 }}
+                        style={{ height: '100%', borderRadius: 1, background: e.spam ? `linear-gradient(90deg,${T.red},${T.redL})` : `linear-gradient(90deg,${T.grn},${T.grnL})` }}
+                      />
+                    </div>
+                  </div>
+                  <span style={{ padding: '4px 12px', borderRadius: 2, flexShrink: 0, background: e.spam ? `${T.red}18` : `${T.grn}22`, color: e.spam ? T.redL : T.grnL, fontSize: '.6rem', fontWeight: 800, letterSpacing: '.07em', textTransform: 'uppercase', border: `1px solid ${e.spam ? T.red : T.grnL}33` }}>
+                    {e.spam ? `${Math.round(e.prob * 100)}% Spam` : 'Safe ✓'}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ━━━━━━━━━━━━━━━━━━ HOW IT WORKS ━━━━━━━━━━━━━━━━━━ */}
+      <section id="how-it-works" style={{ padding: secPad, background: T.black }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+
+          <Reveal style={{ textAlign: 'center', marginBottom: 72 }}>
+            <Tag>✦ Seedha Simple Process</Tag>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
+              <h2 style={{ fontFamily: T.mont, fontWeight: 900, fontSize: 'clamp(1.9rem,4vw,3.2rem)', color: '#fff', lineHeight: 1, letterSpacing: '-0.025em' }}>Ready in</h2>
+              <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(2.2rem,4.8vw,3.8rem)', color: T.gold, lineHeight: 1 }}>ek minute, Ji.</span>
+            </div>
+            <p style={{ fontSize: '.93rem', color: T.crmD, lineHeight: 1.85, maxWidth: 420, margin: '0 auto' }}>
+              No setup, no confusion, no nautanki. Just connect and go.
+            </p>
+          </Reveal>
+
+          <div className="steps-wrap" style={{ position: 'relative' }}>
+            {STEPS.map((s, i) => (
+              <Reveal key={s.n} delay={i * 1.2}>
+                <div style={{ textAlign: 'center', position: 'relative', padding: '0 16px' }}>
+                  {/* Step number circle */}
+                  <div style={{ width: 72, height: 72, borderRadius: '50%', border: `1px solid ${T.gold}`, background: T.bCard, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                    <span style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 700, fontSize: '1.75rem', color: T.gold, lineHeight: 1 }}>{s.n}</span>
+                  </div>
+                  <GoldRule w={32} style={{ margin: '0 auto 22px' }} />
+                  <h3 style={{ fontFamily: T.mont, fontWeight: 800, fontSize: '1rem', color: '#fff', marginBottom: 12, letterSpacing: '-.01em' }}>{s.title}</h3>
+                  <p style={{ fontSize: '.86rem', color: T.crmD, lineHeight: 1.88, maxWidth: 250, margin: '0 auto' }}>{s.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ━━━━━━━━━━━━━━━━━━ FINAL CTA ━━━━━━━━━━━━━━━━━━ */}
       <section style={{ padding: secPad, background: T.black }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
@@ -711,7 +715,7 @@ export default function MailJiLanding() {
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,transparent,${T.gold},${T.goldB},${T.gold},transparent)` }} />
 
               {/* Corner diamonds */}
-              {[{top:16,left:16},{top:16,right:16},{bottom:16,left:16},{bottom:16,right:16}].map((pos,i) => (
+              {[{ top: 16, left: 16 }, { top: 16, right: 16 }, { bottom: 16, left: 16 }, { bottom: 16, right: 16 }].map((pos, i) => (
                 <div key={i} style={{ position: 'absolute', width: 7, height: 7, background: `${T.gold}44`, transform: 'rotate(45deg)', ...pos }} />
               ))}
 
@@ -765,9 +769,9 @@ export default function MailJiLanding() {
               <img src="/logo-white.png" width="78px"></img>
             </span>
 
-            
+
             <div style={{ display: 'flex', gap: 26, flexWrap: 'wrap' }}>
-              {[['#features','Features'],['#how-it-works','How It Works'],['#why-mailji','Why MailJi']].map(([href, lbl]) => (
+              {[['#about', 'About'], ['#why-mailji', 'Why MailJi'], ['#features', 'Features'], ['#how-it-works', 'How It Works']].map(([href, lbl]) => (
                 <a key={lbl} href={href}
                   style={{ fontSize: '.76rem', color: `${T.crmD}44`, textDecoration: 'none', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', transition: 'color .2s' }}
                   onMouseEnter={e => e.target.style.color = T.gold}
