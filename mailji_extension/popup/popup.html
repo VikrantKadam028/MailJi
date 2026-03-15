@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>MailJi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0A0A0A;
+      --bmid:   #111111;
+      --bcard:  #141414;
+      --bdr:    #252525;
+      --bdrg:   rgba(184,134,11,0.2);
+      --gold:   #C9A84C;
+      --goldb:  #E2B84A;
+      --goldd:  #8A6A20;
+      --cream:  #F5EDD6;
+      --crmd:   #C8BA9A;
+      --red:    #C0392B;
+      --redl:   #E07070;
+      --grn:    #1A7A4A;
+      --grnl:   #4CAF7D;
+    }
+
+    body {
+      width: 272px;
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: relative;
+      padding: 16px 16px 13px;
+      background: var(--bcard);
+      border-bottom: 1px solid var(--bdrg);
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--goldb), var(--gold), transparent);
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--bdrg) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bdrg) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-img {
+      width: 76px;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 0 10px rgba(201,168,76,0.35));
+    }
+    .header-sub {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.75;
+    }
+    .corner {
+      position: absolute;
+      width: 5px; height: 5px;
+      background: rgba(201,168,76,0.35);
+      transform: rotate(45deg);
+    }
+
+    /* ── Body ── */
+    .popup-body {
+      padding: 12px 13px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    /* ── Status ── */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--bcard);
+      border: 1px solid var(--bdrg);
+      border-radius: 3px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--crmd);
+      letter-spacing: .02em;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--goldd);
+      flex-shrink: 0;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .status-dot.green  { background: var(--grnl); box-shadow: 0 0 7px var(--grnl); }
+    .status-dot.red    { background: var(--redl); box-shadow: 0 0 7px var(--redl); }
+    .status-dot.orange { background: var(--gold);  box-shadow: 0 0 7px var(--gold); animation: blink 1.6s ease infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ── Gold divider ── */
+    .rule { height: 1px; background: linear-gradient(90deg, transparent, var(--bdrg), transparent); }
+
+    /* ── User card ── */
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      background: var(--bcard);
+      border: 1px solid var(--bdrg);
+      border-radius: 3px;
+    }
+    .user-avatar {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--goldd));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900;
+      color: var(--black);
+      flex-shrink: 0;
+    }
+    .user-email {
+      flex: 1;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--crmd);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .stat-card {
+      padding: 10px 12px;
+      border: 1px solid var(--bdrg);
+      background: var(--bcard);
+      border-radius: 3px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+    }
+    .stat-card.spam::before { background: linear-gradient(90deg, transparent, var(--redl), transparent); }
+    .stat-card.ham::before  { background: linear-gradient(90deg, transparent, var(--grnl), transparent); }
+    .stat-num {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1;
+      display: block;
+    }
+    .stat-card.spam .stat-num { color: var(--redl); }
+    .stat-card.ham  .stat-num { color: var(--grnl); }
+    .stat-label {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: rgba(200,186,154,0.4);
+      margin-top: 3px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      border: none;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      transition: all 0.18s;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--goldb);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(201,168,76,0.25);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--crmd);
+      border: 1px solid rgba(37,37,37,1);
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-danger {
+      background: transparent;
+      color: rgba(224,112,112,0.65);
+      border: 1px solid rgba(192,57,43,0.3);
+    }
+    .btn-danger:hover { border-color: var(--redl); color: var(--redl); }
+
+    /* ── Hint / info text ── */
+    .hint {
+      font-size: 10.5px;
+      color: rgba(200,186,154,0.48);
+      text-align: center;
+      line-height: 1.65;
+    }
+    .hint code {
+      display: block;
+      margin-top: 6px;
+      font-size: 9px;
+      color: var(--gold);
+      background: var(--bcard);
+      border: 1px solid var(--bdrg);
+      padding: 5px 8px;
+      border-radius: 2px;
+      word-break: break-all;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0;
+      text-align: left;
+    }
+
+    /* ── Namaste mascot (shown on login screen) ── */
+    .mascot-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 10px;
+      padding: 4px 0 0;
+    }
+    .mascot-img {
+      width: 72px;
+      height: auto;
+      filter: saturate(.85) contrast(1.06);
+    }
+    .speech-bubble {
+      background: var(--bcard);
+      border: 1px solid var(--gold);
+      border-radius: 10px 10px 2px 10px;
+      padding: 7px 10px;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: .03em;
+      white-space: nowrap;
+      margin-bottom: 14px;
+    }
+
+    /* ── Footer ── */
+    .popup-footer {
+      padding: 7px 13px 9px;
+      border-top: 1px solid var(--bdrg);
+      text-align: center;
+    }
+    .footer-text {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(200,186,154,0.18);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="corner" style="top:7px;left:7px"></div>
+    <div class="corner" style="top:7px;right:7px"></div>
+    <div class="corner" style="bottom:7px;left:7px"></div>
+    <div class="corner" style="bottom:7px;right:7px"></div>
+    <div class="header-inner">
+      <img src="https://i.ibb.co/DfDmgfjN/Untitled-design-1-Photoroom.png" class="logo-img" alt="MailJi">
+      <div>
+        <div class="header-sub">AI Spam Classifier · Gmail</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup-body" id="popup-body">
+    <div class="status-row">
+      <div class="status-dot orange" id="status-dot"></div>
+      <span id="status-text">Connecting to backend…</span>
+    </div>
+  </div>
+
+  <div class="popup-footer">
+    <span class="footer-text">Aapka Inbox · Humari Zimmedaari</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
