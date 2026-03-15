@@ -162,14 +162,17 @@ export default function MailJiLanding() {
     document.head.appendChild(sty)
   }, [])
 
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://mailji.onrender.com'
+
   async function go() {
     setLoading(true)
     try {
-      const r = await fetch('/api/auth/login')
+      const r = await fetch(`${BACKEND_URL}/auth/login`)
       const d = await r.json()
       window.location.href = d.auth_url
-    } catch {
-      alert('Backend not running.\ncd backend && uvicorn main:app --reload --port 8000')
+    } catch (err) {
+      console.error('Backend error:', err)
+      alert('Could not connect to backend. Please try again shortly — the server may be waking up (Render free tier takes ~30s).')
       setLoading(false)
     }
   }
@@ -226,7 +229,7 @@ export default function MailJiLanding() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 36, height: 36, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' ,marginLeft : 12}}>
             {/* <Mail size={15} color={T.black} strokeWidth={2.5} /> */}
-            <img src="https://i.ibb.co/DfDmgfjN/Untitled-design-1-Photoroom.png" width="78px"></img>
+            <img src="/logo-white.png" width="78px"></img>
           </div>
           {/* <span style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
             <span style={{ fontFamily: T.mont, fontWeight: 900, fontSize: '1.18rem', color: '#fff', letterSpacing: '-.01em' }}>Mail</span>
@@ -718,7 +721,7 @@ export default function MailJiLanding() {
             <span style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
               {/* <span style={{ fontFamily: T.mont, fontWeight: 900, fontSize: '1.18rem', color: '#fff', letterSpacing: '-.01em' }}>Mail</span>
               <span style={{ fontFamily: T.scr, color: T.gold, fontSize: '1.9rem', lineHeight: .82 }}>Ji</span> */}
-              <img src="https://i.ibb.co/DfDmgfjN/Untitled-design-1-Photoroom.png" width="78px"></img>
+              <img src="/logo-white.png" width="78px"></img>
             </span>
 
             
