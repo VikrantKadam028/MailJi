@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 const USER_KEY = 'mailji_user'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://mailji.onrender.com'
 
 export function useUser() {
   const [user, setUser]           = useState(null)
@@ -29,7 +30,7 @@ export function useUser() {
 
   const logout = async () => {
     if (user?.user_id) {
-      try { await fetch(`/api/auth/logout/${user.user_id}`, { method: 'DELETE' }) } catch {}
+      try { await fetch(`${BACKEND_URL}/auth/logout/${user.user_id}`, { method: 'DELETE' }) } catch {}
     }
     localStorage.removeItem(USER_KEY)
     setUser(null)
