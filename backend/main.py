@@ -18,6 +18,7 @@ import sys
 import csv
 import string
 import base64
+import secrets
 import numpy as np
 from pathlib import Path
 from dotenv import load_dotenv
@@ -46,7 +47,11 @@ except ImportError:
     print("  LIME not installed. pip install lime  for richer explanations.")
 
 load_dotenv()
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
+# Only set insecure transport for local development (non-HTTPS)
+# On Render (HTTPS), this must NOT be set or OAuth breaks
+if os.getenv("ENVIRONMENT", "production") == "development":
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 # ──────────────────────────────────────────────
 # CONFIG
@@ -71,6 +76,9 @@ SCOPES = [
 ]
 
 TOKEN_STORE: dict = {}
+# OAuth flow state store: maps state_token -> flow
+# Using explicit state tokens instead of a single key so concurrent logins don't clobber each other
+FLOW_STORE: dict = {}
 
 # ──────────────────────────────────────────────
 # TEXT CLEANING
@@ -311,23 +319,26 @@ def predict_spam(email_text: str, use_lime: bool = True) -> dict:
 # GMAIL HELPERS
 # ──────────────────────────────────────────────
 
-def get_flow() -> Flow:
+def get_flow(state: str = None) -> Flow:
+    """Build OAuth Flow from credentials.json or env vars."""
     if CREDS_FILE.exists():
-        return Flow.from_client_secrets_file(
+        flow = Flow.from_client_secrets_file(
             str(CREDS_FILE), scopes=SCOPES, redirect_uri=REDIRECT_URI
         )
-    client_config = {
-        "web": {
-            "client_id":     CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "auth_uri":      "https://accounts.google.com/o/oauth2/auth",
-            "token_uri":     "https://oauth2.googleapis.com/token",
-            "redirect_uris": [REDIRECT_URI],
+    else:
+        client_config = {
+            "web": {
+                "client_id":     CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+                "auth_uri":      "https://accounts.google.com/o/oauth2/auth",
+                "token_uri":     "https://oauth2.googleapis.com/token",
+                "redirect_uris": [REDIRECT_URI],
+            }
         }
-    }
-    return Flow.from_client_config(
-        client_config, scopes=SCOPES, redirect_uri=REDIRECT_URI
-    )
+        flow = Flow.from_client_config(
+            client_config, scopes=SCOPES, redirect_uri=REDIRECT_URI
+        )
+    return flow
 
 def decode_body(payload: dict) -> str:
     if payload.get("body", {}).get("data"):
@@ -357,8 +368,6 @@ def fetch_emails(
     """
     service = build("gmail", "v1", credentials=creds, cache_discovery=False)
 
-    # Gmail API paginates via pageToken
-    # We fetch offset + max_results, then slice
     fetch_count = min(offset + max_results, 100)  # hard cap at 100
 
     list_params = {
@@ -370,7 +379,6 @@ def fetch_emails(
     result   = service.users().messages().list(**list_params).execute()
     all_msgs = result.get("messages", [])
 
-    # Handle next page if offset pushes beyond first page
     while len(all_msgs) < fetch_count and "nextPageToken" in result:
         result   = service.users().messages().list(
             **list_params,
@@ -378,7 +386,6 @@ def fetch_emails(
         ).execute()
         all_msgs.extend(result.get("messages", []))
 
-    # Apply offset slice
     msgs_to_process = all_msgs[offset: offset + max_results]
 
     emails = []
@@ -415,9 +422,9 @@ def fetch_emails(
 # FASTAPI APP
 # ──────────────────────────────────────────────
 
-app = FastAPI(title="Mailji AI API", version="3.0.0")
+app = FastAPI(title="Mailji AI API", version="3.1.0")
 
-# Build allowed origins list — FRONTEND_URL + localhost for dev + any EXTRA_ORIGINS env var
+# Build allowed origins list
 _extra = [o.strip() for o in os.getenv("EXTRA_ORIGINS", "").split(",") if o.strip()]
 ALLOWED_ORIGINS = list({
     FRONTEND_URL,
@@ -455,33 +462,68 @@ def root():
 
 @app.get("/auth/login")
 def auth_login():
-    flow = get_flow()
-    auth_url, state = flow.authorization_url(
+    """
+    Start OAuth flow. Returns auth_url with a state token embedded.
+    The state token is used to retrieve the correct flow in /auth/callback.
+    This avoids the single-flow-slot problem with concurrent logins on Render.
+    """
+    state = secrets.token_urlsafe(32)
+    flow  = get_flow()
+    auth_url, _ = flow.authorization_url(
         access_type="offline",
         include_granted_scopes="true",
         prompt="consent",
+        state=state,
     )
-    TOKEN_STORE["__oauth_flow__"] = flow
+    # Store flow keyed by state token (expires after use)
+    FLOW_STORE[state] = flow
+    # Clean up old states (keep at most 100 pending flows)
+    if len(FLOW_STORE) > 100:
+        oldest_keys = list(FLOW_STORE.keys())[:-100]
+        for k in oldest_keys:
+            FLOW_STORE.pop(k, None)
     return {"auth_url": auth_url}
 
 
 @app.get("/auth/callback")
 def auth_callback(request: Request):
-    flow = TOKEN_STORE.get("__oauth_flow__")
-    if not flow:
-        raise HTTPException(status_code=400, detail="OAuth flow missing. Please login again.")
+    """
+    Handle OAuth callback from Google.
+    Retrieves the flow using the state param echoed back by Google.
+    """
+    state = request.query_params.get("state")
+    if not state or state not in FLOW_STORE:
+        raise HTTPException(
+            status_code=400,
+            detail="OAuth state missing or expired. Please try logging in again."
+        )
+
+    flow = FLOW_STORE.pop(state)  # consume the flow (one-time use)
+
     try:
-        flow.fetch_token(authorization_response=str(request.url))
+        # On production (HTTPS), we must pass the full https:// URL.
+        # On local dev, http:// is fine because OAUTHLIB_INSECURE_TRANSPORT=1 is set.
+        callback_url = str(request.url)
+        # Render terminates TLS at load balancer and forwards as http internally.
+        # We need to tell the OAuth library the URL was actually https.
+        if callback_url.startswith("http://") and os.getenv("ENVIRONMENT", "production") == "production":
+            callback_url = "https://" + callback_url[len("http://"):]
+
+        flow.fetch_token(authorization_response=callback_url)
         creds = flow.credentials
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"OAuth error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"OAuth token exchange error: {str(e)}")
 
-    user_service = build("oauth2", "v2", credentials=creds, cache_discovery=False)
-    user_info    = user_service.userinfo().get().execute()
-    user_id      = user_info["id"]
-    email        = user_info["email"]
-    name         = user_info.get("name", email)
-    picture      = user_info.get("picture", "")
+    try:
+        user_service = build("oauth2", "v2", credentials=creds, cache_discovery=False)
+        user_info    = user_service.userinfo().get().execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch user info: {str(e)}")
+
+    user_id = user_info["id"]
+    email   = user_info["email"]
+    name    = user_info.get("name", email)
+    picture = user_info.get("picture", "")
 
     TOKEN_STORE[user_id] = {
         "token":         creds.token,
@@ -495,9 +537,15 @@ def auth_callback(request: Request):
         "picture":       picture,
     }
 
-    return RedirectResponse(
-        url=f"{FRONTEND_URL}/dashboard?user_id={user_id}&email={email}&name={name}&picture={picture}"
+    import urllib.parse
+    redirect_url = (
+        f"{FRONTEND_URL}/dashboard"
+        f"?user_id={urllib.parse.quote(user_id)}"
+        f"&email={urllib.parse.quote(email)}"
+        f"&name={urllib.parse.quote(name)}"
+        f"&picture={urllib.parse.quote(picture)}"
     )
+    return RedirectResponse(url=redirect_url)
 
 
 @app.get("/auth/user/{user_id}")
@@ -526,11 +574,6 @@ def get_emails(
     - limit:    how many emails to scan (1–100)
     - offset:   skip N emails first — use for pagination
     - use_lime: enable LIME XAI explanations (only for spam, adds ~1-2s per spam email)
-
-    Example ranges:
-      /emails/uid?limit=20&offset=0   → emails 1-20
-      /emails/uid?limit=20&offset=20  → emails 21-40
-      /emails/uid?limit=50&offset=50  → emails 51-100
     """
     if user_id not in TOKEN_STORE:
         raise HTTPException(status_code=401, detail="Not authenticated")
