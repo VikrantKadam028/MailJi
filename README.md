@@ -751,8 +751,6 @@ This project is for educational and portfolio purposes.
 ---
 
 <div align="center">
-  <img src="https://i.ibb.co/DfDmgfjN/Untitled-design-1-Photoroom.png" alt="MailJi" width="80"/>
-  <br/>
   <p>
     <strong>MailJi</strong> · Built with 🙏 by the MailJi Team<br/>
     <em>Aapka Inbox, Humari Zimmedaari.</em>
