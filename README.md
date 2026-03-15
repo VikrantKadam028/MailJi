@@ -92,26 +92,26 @@
 │   │   React Web App      │        │   Chrome Extension           │  │
 │   │   (Vite · Port 5173) │        │   (Gmail Sidebar Injection)  │  │
 │   │                      │        │                              │  │
-│   │  LandingPage.jsx ────┼──┐     │  content.js  (DOM inject)   │  │
-│   │  Dashboard.jsx    ───┼──┼──── │  background.js (SW + Auth)  │  │
-│   │  SpamDonut.jsx    ───┼──┤     │  popup.html/js (toolbar UI) │  │
-│   │  EmailRow.jsx     ───┼──┤     │  mailji.css  (injected CSS) │  │
+│   │  LandingPage.jsx ────┼──┐     │  content.js  (DOM inject)    │  │
+│   │  Dashboard.jsx    ───┼──┼──── │  background.js (SW + Auth)   │  │
+│   │  SpamDonut.jsx    ───┼──┤     │  popup.html/js (toolbar UI)  │  │ 
+│   │  EmailRow.jsx     ───┼──┤     │  mailji.css  (injected CSS)  │  │
 │   └──────────────────────┘  │     └──────────────────────────────┘  │
-│                              │                    │                  │
-└──────────────────────────────┼────────────────────┼──────────────────┘
-                               │   REST API         │   REST API
-                               ▼                    ▼
+│                             │                    │                  │
+└─────────────────────────────┼────────────────────┼──────────────────┘
+                              │   REST API         │   REST API
+                              ▼                    ▼
                   ┌────────────────────────────────────┐
-                  │      FastAPI Backend (Python)       │
-                  │      https://mailji.onrender.com    │
-                  │                                     │
-                  │  /auth/login    → OAuth2 URL        │
-                  │  /auth/callback → Token exchange    │
-                  │  /emails/{uid}  → Fetch + Classify  │
-                  │  /predict       → Direct classify   │
-                  │  /model/status  → Health check      │
-                  │  /auth/logout   → Session clear     │
-                  │                                     │
+                  │      FastAPI Backend (Python)      │
+                  │      https://mailji.onrender.com   │
+                  │                                    │
+                  │  /auth/login    → OAuth2 URL       │
+                  │  /auth/callback → Token exchange   │
+                  │  /emails/{uid}  → Fetch + Classify │
+                  │  /predict       → Direct classify  │
+                  │  /model/status  → Health check     │
+                  │  /auth/logout   → Session clear    │
+                  │                                    │
                   │  ┌──────────────────────────────┐  │
                   │  │  ML Pipeline                 │  │
                   │  │  TF-IDF Vectorizer           │  │
@@ -123,10 +123,10 @@
                                │
                                ▼
                   ┌────────────────────────────────────┐
-                  │         Gmail API (Google)          │
-                  │  Scopes: gmail.readonly             │
-                  │          userinfo.email             │
-                  │          userinfo.profile           │
+                  │         Gmail API (Google)         │
+                  │  Scopes: gmail.readonly            │
+                  │          userinfo.email            │
+                  │          userinfo.profile          │
                   └────────────────────────────────────┘
 ```
 
