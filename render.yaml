@@ -1,0 +1,35 @@
+services:
+  # ── Backend (Python/FastAPI) ──────────────────
+  - type: web
+    name: mailji
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GOOGLE_CLIENT_ID
+        sync: false          # set manually in Render dashboard
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: REDIRECT_URI
+        value: https://mailji.onrender.com/auth/callback
+      - key: FRONTEND_URL
+        value: https://mailji-frontend.onrender.com
+      - key: ENVIRONMENT
+        value: production    # keeps OAUTHLIB_INSECURE_TRANSPORT off
+
+  # ── Frontend (Vite/React static site) ────────
+  - type: web
+    name: mailji-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: https://mailji.onrender.com
+    routes:
+      # SPA fallback — send all routes to index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
