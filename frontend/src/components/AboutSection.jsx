@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { AlertTriangle, Search, Lock } from 'lucide-react'
 
 /* ─── Design tokens — same as LandingPage.jsx ──────────────────────────────── */
 const T = {
@@ -89,19 +90,19 @@ const ROW2 = [
 const MOTIVES = [
   {
     no: '01',
-    icon: '🚨',
+    Icon: AlertTriangle,
     title: 'Kyunki Spam Se Dar Lagta Hai, Ji',
     desc: 'Roz 3.4 billion spam emails aate hain. Ek wrong click — aur sab kuch khatam. MailJi us gusse se bana hai jo tab aaya jab ek dost ka inbox hack hua. Woh din yaad hai abhi bhi.',
   },
   {
     no: '02',
-    icon: '🔍',
+    Icon: Search,
     title: '"Blocked" Enough Nahi Hai, Bhai',
     desc: 'Baaki filters sirf rokte hain — batate nahi kyun. Hum mante hain aapko pata hona chahiye exactly kaun sa word suspicious tha. LIME explainability isliye hai — transparency pehle, baaki baad mein.',
   },
   {
     no: '03',
-    icon: '🔒',
+    Icon: Lock,
     title: 'Privacy Is Non-Negotiable, Yaar',
     desc: 'Aapke emails sirf aapke hain. MailJi classify karta hai — store nahi karta, log nahi karta, bechta toh bilkul nahi. Read kiya, protect kiya, bhool gaye. Zero data, zero tension, Ji.',
   },
@@ -417,8 +418,20 @@ export default function AboutSection() {
                   position: 'relative', overflow: 'hidden',
                 }}
               >
+                {/* Background number watermark */}
                 <div style={{ position: 'absolute', top: 10, right: 16, fontFamily: T.corm, fontStyle: 'italic', fontWeight: 300, fontSize: '3.4rem', color: `${T.gold}0D`, lineHeight: 1, userSelect: 'none' }}>{m.no}</div>
-                <div style={{ fontSize: '1.6rem', marginBottom: 16, lineHeight: 1 }}>{m.icon}</div>
+
+                {/* Golden icon box */}
+                <div style={{
+                  width: 46, height: 46, borderRadius: 3,
+                  border: `1px solid ${T.bdrG}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: 18,
+                  background: 'transparent',
+                }}>
+                  <m.Icon size={19} color={T.goldD} strokeWidth={1.8} />
+                </div>
+
                 <div style={{ fontFamily: T.corm, fontStyle: 'italic', fontWeight: 700, fontSize: '0.72rem', color: T.gold, letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 10 }}>{m.no}</div>
                 <h3 style={{ fontFamily: T.mont, fontWeight: 800, fontSize: '.9rem', color: '#fff', marginBottom: 10, letterSpacing: '-.01em', lineHeight: 1.4 }}>{m.title}</h3>
                 <p style={{ fontSize: '.82rem', color: T.crmD, lineHeight: 1.85, fontFamily: T.mont }}>{m.desc}</p>
