@@ -88,10 +88,9 @@ function renderLoggedOut() {
         setStatus("red", res?.error || "Login failed");
         renderLoggedOut();
       } else {
+        // background.js already focused Gmail and sent USER_LOGGED_IN to content script
         init();
-        chrome.tabs.query({ url: "https://mail.google.com/*" }, (tabs) => {
-          if (tabs.length === 0) chrome.tabs.create({ url: "https://mail.google.com/" });
-        });
+        window.close();
       }
     });
   });
