@@ -48,9 +48,11 @@ async function startLogin() {
 
         const listener = (updatedTabId, changeInfo, updatedTab) => {
           if (updatedTabId !== tabId) return;
-          if (changeInfo.status !== "complete") return;
 
           const url = updatedTab.url || "";
+
+          // Intercept at "loading" so the frontend never fully renders
+          if (changeInfo.status !== "loading" && changeInfo.status !== "complete") return;
 
           // Catch any URL that has user_id= — this is the final dashboard redirect from backend
           if (url.includes("user_id=")) {
@@ -65,7 +67,23 @@ async function startLogin() {
 
             if (userId) {
               const userInfo = { email, name, picture };
-              setStoredUser(userId, userInfo).then(() => resolve({ userId, userInfo }));
+              setStoredUser(userId, userInfo).then(() => {
+                // Bring Gmail into focus and trigger sidebar update
+                chrome.tabs.query({ url: "https://mail.google.com/*" }, (tabs) => {
+                  if (tabs.length > 0) {
+                    chrome.tabs.update(tabs[0].id, { active: true });
+                    chrome.windows.update(tabs[0].windowId, { focused: true });
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                      type: "USER_LOGGED_IN",
+                      userId,
+                      userInfo,
+                    });
+                  } else {
+                    chrome.tabs.create({ url: "https://mail.google.com/" });
+                  }
+                });
+                resolve({ userId, userInfo });
+              });
             } else {
               reject(new Error("Login failed: no user_id in redirect"));
             }
