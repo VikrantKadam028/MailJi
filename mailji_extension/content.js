@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  const LOGO_URL   = "https://i.ibb.co/q3jjf4f6/Mail-i-4-Photoroom-1.png";
+  const LOGO_URL   = "https://i.postimg.cc/SKnNLqRp/logo-black.png";
   const MASCOT_URL = "https://png.pngtree.com/png-vector/20220821/ourmid/pngtree-indian-man-with-turban-rajasthani-men-welcome-namaste-greetings-png-image_6119228.png";
 
   // Quick-pick range options
@@ -408,6 +408,20 @@
   waitForGmail(() => {
     injectIntoGmail();
     observer.observe(document.body, { childList: true, subtree: false });
+  });
+
+  // ── Listen for login events from background ────────────────────────────────
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === "USER_LOGGED_IN") {
+      currentUser = { userId: message.userId, userInfo: message.userInfo };
+      // Make sure the panel is visible and not collapsed
+      const panel = document.getElementById("mailji-panel");
+      if (panel) panel.classList.remove("mailji-collapsed");
+      const chevron = document.getElementById("mailji-chevron");
+      if (chevron) chevron.textContent = "▾";
+      // Start loading emails immediately
+      loadEmails(0, selectedRange);
+    }
   });
 
 })();
